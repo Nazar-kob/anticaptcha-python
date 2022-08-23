@@ -3,7 +3,6 @@ import time
 
 
 class recaptchaV2Proxyon(antiNetworking):
-
     def solve_and_return_solution(self):
         task = {
             "type": "RecaptchaV2Task",
@@ -17,22 +16,23 @@ class recaptchaV2Proxyon(antiNetworking):
             "proxyLogin": self.proxy_login,
             "proxyPassword": self.proxy_password,
             "userAgent": self.user_agent,
-            "cookies": self.cookies
+            "cookies": self.cookies,
         }
         if self.is_invisible:
-            task['isInvisible'] = True
-        if self.create_task({
-            "clientKey": self.client_key,
-            "task": task,
-            "softId": self.soft_id
-        }) == 1:
-            self.log("created task with id "+str(self.task_id))
+            task["isInvisible"] = True
+        if (
+            self.create_task(
+                {"clientKey": self.client_key, "task": task, "softId": self.soft_id}
+            )
+            == 1
+        ):
+            self.log("created task with id " + str(self.task_id))
         else:
             self.log("could not create task")
             self.log(self.err_string)
             return 0
-        #checking result
-        time.sleep(3)
+        # checking result
+        time.sleep(5)
         task_result = self.wait_for_result(300)
         if task_result == 0:
             return 0

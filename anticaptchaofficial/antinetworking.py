@@ -4,7 +4,7 @@ import urllib3
 from datetime import datetime
 import time
 
-default_headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+default_headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
 session = requests.Session()
 session.headers.update(default_headers)
@@ -32,7 +32,7 @@ class antiNetworking:
     err_string = ""
     task_id = 0
     error_code = ""
-    
+
     phrase = False
     case = False
     numeric = 0
@@ -58,7 +58,12 @@ class antiNetworking:
                 return 1
             else:
                 self.error_code = new_task["errorCode"]
-                self.err_string = "API error "+new_task["errorCode"] + ": "+new_task["errorDescription"]
+                self.err_string = (
+                    "API error "
+                    + new_task["errorCode"]
+                    + ": "
+                    + new_task["errorDescription"]
+                )
                 return 0
 
     def wait_for_result(self, max_seconds=300, current_second=0):
@@ -67,56 +72,62 @@ class antiNetworking:
             self.err_string = "task solution expired"
             return 0
 
-        time.sleep(1)
-        task_check = self.make_request("getTaskResult", {
-            "clientKey": self.client_key,
-            "taskId": self.task_id
-        })
+        time.sleep(5)
+        task_check = self.make_request(
+            "getTaskResult", {"clientKey": self.client_key, "taskId": self.task_id}
+        )
         if task_check == 0:
             return 0
         else:
             if task_check["errorId"] == 0:
                 if task_check["status"] == "processing":
                     self.log("task is still processing")
-                    return self.wait_for_result(max_seconds, current_second+1)
+                    return self.wait_for_result(max_seconds, current_second + 5)
                 if task_check["status"] == "ready":
                     self.log("task solved")
                     return task_check
             else:
                 self.error_code = task_check["errorCode"]
-                self.err_string = "API error "+task_check["errorCode"] + ": "+task_check["errorDescription"]
+                self.err_string = (
+                    "API error "
+                    + task_check["errorCode"]
+                    + ": "
+                    + task_check["errorDescription"]
+                )
                 self.log(self.err_string)
                 return 0
 
     def report_incorrect_image_captcha(self):
-        return self.make_request("reportIncorrectImageCaptcha", {
-            "clientKey": self.client_key,
-            "taskId": self.task_id
-        })
+        return self.make_request(
+            "reportIncorrectImageCaptcha",
+            {"clientKey": self.client_key, "taskId": self.task_id},
+        )
 
     def report_incorrect_recaptcha(self):
-        return self.make_request("reportIncorrectRecaptcha", {
-            "clientKey": self.client_key,
-            "taskId": self.task_id
-        })
+        return self.make_request(
+            "reportIncorrectRecaptcha",
+            {"clientKey": self.client_key, "taskId": self.task_id},
+        )
 
     def report_correct_recaptcha(self):
-        return self.make_request("reportCorrectRecaptcha", {
-            "clientKey": self.client_key,
-            "taskId": self.task_id
-        })
+        return self.make_request(
+            "reportCorrectRecaptcha",
+            {"clientKey": self.client_key, "taskId": self.task_id},
+        )
 
     def report_incorrect_hcaptcha(self):
-        return self.make_request("reportIncorrectHcaptcha", {
-            "clientKey": self.client_key,
-            "taskId": self.task_id
-        })
+        return self.make_request(
+            "reportIncorrectHcaptcha",
+            {"clientKey": self.client_key, "taskId": self.task_id},
+        )
 
     def make_request(self, method, data):
-        self.log("making request to "+method)
+        self.log("making request to " + method)
 
         try:
-            response = session.post("https://api.anti-captcha.com/"+method, data=json.dumps(data))
+            response = session.post(
+                "https://api.anti-captcha.com/" + method, data=json.dumps(data)
+            )
         except requests.exceptions.HTTPError as err:
             self.log("HTTPError", err.errno, err.strerror, err.args, err.filename)
             self.err_string = "http_error"
@@ -136,7 +147,7 @@ class antiNetworking:
             self.err_string = "Read timeout"
             return 0
         except urllib3.exceptions.MaxRetryError as err:
-            self.err_string = "Connection retry error: "+err.reason
+            self.err_string = "Connection retry error: " + err.reason
             return 0
         except requests.exceptions.ConnectionError:
             self.err_string = "Connection refused"
@@ -159,10 +170,10 @@ class antiNetworking:
         self.website_stoken = value
 
     def set_data_s(self, value):
-        self.recaptcha_data_s = value;
+        self.recaptcha_data_s = value
 
     def set_enterprise_payload(self, value):
-        self.recaptcha_enterprise_payload = value;
+        self.recaptcha_enterprise_payload = value
 
     def set_proxy_type(self, value):
         self.proxy_type = value
@@ -200,18 +211,18 @@ class antiNetworking:
 
     def set_phrase(self, value):
         self.phrase = value
-        
+
     def set_case(self, value):
         self.case = value
-        
+
     def set_numeric(self, value):
         self.numeric = value
-        
+
     def set_math(self, value):
         self.math = value
 
     def set_minLength(self, value):
-        self.minLength = value  
+        self.minLength = value
 
     def set_maxLength(self, value):
         self.maxLength = value
