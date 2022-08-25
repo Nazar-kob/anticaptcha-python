@@ -28,7 +28,7 @@ class hCaptchaProxyless(antiNetworking):
             return 0
         # checking result
         time.sleep(5)
-        task_result = self.wait_for_result(300)
+        task_result = self.wait_for_result(70)
         if task_result == 0:
             return 0
         else:

@@ -66,13 +66,13 @@ class antiNetworking:
                 )
                 return 0
 
-    def wait_for_result(self, max_seconds=300, current_second=0):
+    def wait_for_result(self, max_seconds=70, current_second=0):
 
         if current_second >= max_seconds:
             self.err_string = "task solution expired"
             return 0
 
-        time.sleep(5)
+        time.sleep(10)
         task_check = self.make_request(
             "getTaskResult", {"clientKey": self.client_key, "taskId": self.task_id}
         )
@@ -82,7 +82,7 @@ class antiNetworking:
             if task_check["errorId"] == 0:
                 if task_check["status"] == "processing":
                     self.log("task is still processing")
-                    return self.wait_for_result(max_seconds, current_second + 5)
+                    return self.wait_for_result(max_seconds, current_second + 10)
                 if task_check["status"] == "ready":
                     self.log("task solved")
                     return task_check
